@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0a2342" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="PIS" />
+  <meta name="description" content="Procurement Information System – Senaka Group" />
+  <title>Procurement Information System</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="icon" type="image/png" href="icons/icon-192.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy:    #0a2342;
+      --gold:    #c9a84c;
+      --gold-lt: #e8c97e;
+      --cream:   #f7f3ec;
+      --white:   #ffffff;
+      --muted:   #6b7280;
+      --border:  #d1c9bb;
+      --error:   #c0392b;
+      --success: #1a7a4a;
+      --card-bg: #ffffff;
+      --input-bg:#fdfaf6;
+      --shadow:  0 4px 24px rgba(10,35,66,.10);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: #1e1e2e;
+      min-height: 100vh;
+      padding-bottom: 40px;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--navy);
+      color: var(--white);
+      text-align: center;
+      padding: 28px 20px 22px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 16px rgba(10,35,66,.35);
+    }
+    .header-brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.55rem;
+      letter-spacing: .06em;
+      color: var(--gold);
+      text-transform: uppercase;
+    }
+    .header-sub {
+      font-size: .78rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.65);
+      margin-top: 2px;
+    }
+    .header-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      color: var(--white);
+      margin-top: 6px;
+      font-weight: 600;
+    }
+    .header-divider {
+      width: 48px; height: 2px;
+      background: var(--gold);
+      margin: 10px auto 0;
+      border-radius: 2px;
+    }
+
+    /* ── Progress Bar ── */
+    .progress-wrap {
+      background: var(--navy);
+      padding: 0 20px 14px;
+    }
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: .72rem;
+      color: rgba(255,255,255,.5);
+      margin-bottom: 6px;
+    }
+    .progress-bar-bg {
+      background: rgba(255,255,255,.15);
+      border-radius: 99px;
+      height: 5px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      background: linear-gradient(90deg, var(--gold), var(--gold-lt));
+      height: 100%;
+      border-radius: 99px;
+      transition: width .4s ease;
+      width: 0%;
+    }
+
+    /* ── Main Container ── */
+    .container { max-width: 640px; margin: 0 auto; padding: 0 16px; }
+
+    /* ── Section Cards ── */
+    .section-card {
+      background: var(--card-bg);
+      border-radius: 14px;
+      margin-top: 18px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      border: 1px solid rgba(209,201,187,.45);
+    }
+    .section-header {
+      background: linear-gradient(135deg, var(--navy) 0%, #143a68 100%);
+      color: var(--white);
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-icon { font-size: 1.1rem; }
+    .section-label {
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--gold-lt);
+    }
+    .section-body { padding: 18px 16px 14px; display: flex; flex-direction: column; gap: 14px; }
+
+    /* ── Field ── */
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field-label {
+      font-size: .78rem;
+      font-weight: 600;
+      color: #3a3a5c;
+      letter-spacing: .04em;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .req { color: var(--error); font-size: .85rem; }
+    .field-input,
+    .field-select,
+    .field-textarea {
+      background: var(--input-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      padding: 11px 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .92rem;
+      color: #1e1e2e;
+      width: 100%;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    .field-input:focus,
+    .field-select:focus,
+    .field-textarea:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(201,168,76,.18);
+    }
+    .field-input.error,
+    .field-select.error,
+    .field-textarea.error {
+      border-color: var(--error);
+      box-shadow: 0 0 0 3px rgba(192,57,43,.13);
+    }
+    .field-textarea { resize: vertical; min-height: 80px; }
+    .field-hint { font-size: .72rem; color: var(--muted); }
+    .field-error { font-size: .73rem; color: var(--error); display: none; }
+    .field-error.visible { display: block; }
+    .select-wrap { position: relative; }
+    .select-wrap::after {
+      content: '▾';
+      position: absolute;
+      right: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gold);
+      pointer-events: none;
+      font-size: .9rem;
+    }
+
+    /* ── Row ── */
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* ── Image Upload ── */
+    .img-upload-area {
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 22px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+      position: relative;
+    }
+    .img-upload-area:hover { border-color: var(--gold); background: #fffdf7; }
+    .img-upload-area input[type=file] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .img-icon { font-size: 2rem; color: var(--gold); }
+    .img-upload-text { font-size: .82rem; color: var(--muted); margin-top: 6px; }
+    .img-preview { display: none; margin-top: 12px; }
+    .img-preview img { max-width: 100%; border-radius: 9px; border: 1px solid var(--border); max-height: 200px; object-fit: contain; }
+    .img-preview .remove-img {
+      display: inline-block; margin-top: 6px;
+      font-size: .75rem; color: var(--error); cursor: pointer; text-decoration: underline;
+    }
+
+    /* ── Submit Button ── */
+    .submit-wrap { padding: 24px 0 8px; }
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, var(--navy) 0%, #143a68 100%);
+      color: var(--white);
+      border: none;
+      border-radius: 12px;
+      padding: 16px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: .06em;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform .15s, box-shadow .15s;
+      box-shadow: 0 4px 18px rgba(10,35,66,.28);
+    }
+    .btn-submit:active { transform: scale(.98); }
+    .btn-submit::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 40%, rgba(201,168,76,.22) 100%);
+    }
+    .btn-submit .btn-icon { margin-right: 8px; }
+    .btn-submit:disabled { opacity: .6; cursor: not-allowed; }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed;
+      bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px);
+      background: var(--navy);
+      color: var(--white);
+      padding: 13px 24px;
+      border-radius: 50px;
+      font-size: .85rem;
+      font-weight: 500;
+      z-index: 9999;
+      transition: transform .4s cubic-bezier(.34,1.56,.64,1), opacity .4s;
+      opacity: 0;
+      box-shadow: 0 8px 32px rgba(10,35,66,.35);
+      max-width: 90%;
+      text-align: center;
+      border-left: 4px solid var(--gold);
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    #toast.success { border-left-color: #27ae60; }
+    #toast.error-toast { border-left-color: var(--error); }
+
+    /* ── Loading Overlay ── */
+    #loading {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(10,35,66,.72);
+      z-index: 9998;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+    #loading.show { display: flex; }
+    .spinner {
+      width: 44px; height: 44px;
+      border: 4px solid rgba(201,168,76,.3);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+    .loading-text { color: var(--white); font-size: .9rem; font-weight: 500; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Success Screen ── */
+    #success-screen {
+      display: none;
+      position: fixed; inset: 0;
+      background: var(--cream);
+      z-index: 9997;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 28px;
+      text-align: center;
+    }
+    #success-screen.show { display: flex; }
+    .success-icon { font-size: 4rem; margin-bottom: 20px; }
+    .success-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      color: var(--navy);
+      margin-bottom: 10px;
+    }
+    .success-msg { color: var(--muted); font-size: .9rem; max-width: 320px; line-height: 1.6; }
+    .btn-new {
+      margin-top: 28px;
+      background: var(--gold);
+      color: var(--navy);
+      border: none;
+      border-radius: 10px;
+      padding: 13px 32px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .95rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(201,168,76,.35);
+      transition: opacity .15s;
+    }
+    .btn-new:hover { opacity: .88; }
+
+    /* ── Install Banner ── */
+    #install-banner {
+      display: none;
+      background: linear-gradient(135deg, #143a68, var(--navy));
+      color: var(--white);
+      padding: 12px 16px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: .82rem;
+    }
+    #install-banner.show { display: flex; }
+    .install-btn {
+      background: var(--gold);
+      color: var(--navy);
+      border: none;
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-weight: 700;
+      font-size: .8rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .install-close { cursor: pointer; font-size: 1.1rem; color: rgba(255,255,255,.5); }
+
+    /* ── LKR Input ── */
+    .lkr-wrap { position: relative; }
+    .lkr-wrap .lkr-prefix {
+      position: absolute; left: 12px; top: 50%;
+      transform: translateY(-50%);
+      font-size: .8rem; font-weight: 600;
+      color: var(--gold); pointer-events: none;
+    }
+    .lkr-wrap .field-input { padding-left: 48px; }
+
+    /* Offline indicator */
+    #offline-bar {
+      display: none;
+      background: #c0392b;
+      color: white;
+      text-align: center;
+      padding: 7px;
+      font-size: .78rem;
+      letter-spacing: .05em;
+    }
+    #offline-bar.show { display: block; }
+
+    @media (max-width: 400px) {
+      .header-brand { font-size: 1.25rem; }
+      .field-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Offline Bar -->
+<div id="offline-bar">⚠ You are offline – submissions will be queued</div>
+
+<!-- Install Banner -->
+<div id="install-banner">
+  <span>📲 Install PIS as an app on your home screen</span>
+  <button class="install-btn" id="install-btn">Install</button>
+  <span class="install-close" id="install-close">✕</span>
+</div>
+
+<!-- Header -->
+<header>
+  <div class="header-brand">SENAKA GROUP</div>
+  <div class="header-sub">Tender Notice Form</div>
+  <div class="header-title">Procurement Information System</div>
+  <div class="header-divider"></div>
+</header>
+
+<!-- Progress -->
+<div class="progress-wrap">
+  <div class="progress-label">
+    <span>Form Progress</span>
+    <span id="progress-pct">0%</span>
+  </div>
+  <div class="progress-bar-bg">
+    <div class="progress-bar-fill" id="progress-bar"></div>
+  </div>
+</div>
+
+<!-- Form -->
+<div class="container">
+<form id="tenderForm" novalidate>
+
+  <!-- ── Section 1: Core Details ── -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">📋</span>
+      <span class="section-label">Core Tender Details</span>
+    </div>
+    <div class="section-body">
+
+      <!-- 1. Date -->
+      <div class="field">
+        <label class="field-label" for="f_date">Tender Notice Date <span class="req">*</span></label>
+        <input class="field-input" type="date" id="f_date" name="date" required />
+        <div class="field-error" id="err_date">Please select a date.</div>
+      </div>
+
+      <!-- 2. Tender Type -->
+      <div class="field">
+        <label class="field-label" for="f_type">Tender Type <span class="req">*</span></label>
+        <div class="select-wrap">
+          <select class="field-select" id="f_type" name="type" required>
+            <option value="">— Select Tender Type —</option>
+            <option>Building Construction</option>
+            <option>Building Renovation</option>
+            <option>Concrete Readymix Supply</option>
+            <option>Roads Construction</option>
+            <option>Supply of Precast Concrete Items</option>
+            <option>Supply of Cement Blocks</option>
+            <option>Supply of Vehicles / Machineries</option>
+            <option>Supply of Trading Items</option>
+            <option>Supply of Quarry Aggregates</option>
+            <option>Other Project</option>
+          </select>
+        </div>
+        <div class="field-error" id="err_type">Please select a tender type.</div>
+      </div>
+
+      <!-- 3. Information Source -->
+      <div class="field">
+        <label class="field-label" for="f_source">Information Source <span class="req">*</span></label>
+        <div class="select-wrap">
+          <select class="field-select" id="f_source" name="source" required>
+            <option value="">— Select Source —</option>
+            <option>Newspaper Advertisement</option>
+            <option>Tender.lk Website</option>
+            <option>Promise.lk Website</option>
+            <option>Directly from Client</option>
+            <option>Government Gazette</option>
+            <option>Other Source</option>
+          </select>
+        </div>
+        <div class="field-error" id="err_source">Please select a source.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Section 2: Location ── -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">📍</span>
+      <span class="section-label">Location</span>
+    </div>
+    <div class="section-body">
+
+      <!-- 4. Province -->
+      <div class="field">
+        <label class="field-label" for="f_province">Province <span class="req">*</span></label>
+        <div class="select-wrap">
+          <select class="field-select" id="f_province" name="province" required>
+            <option value="">— Select Province —</option>
+            <option>Western</option>
+            <option>Central</option>
+            <option>Southern</option>
+            <option>Northern</option>
+            <option>Eastern</option>
+            <option>North Western</option>
+            <option>North Central</option>
+            <option>Uva</option>
+            <option>Sabaragamuwa</option>
+          </select>
+        </div>
+        <div class="field-error" id="err_province">Please select a province.</div>
+      </div>
+
+      <!-- 5. District -->
+      <div class="field">
+        <label class="field-label" for="f_district">District <span class="req">*</span></label>
+        <div class="select-wrap">
+          <select class="field-select" id="f_district" name="district" required>
+            <option value="">— Select Province First —</option>
+          </select>
+        </div>
+        <div class="field-error" id="err_district">Please select a district.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Section 3: Project Info ── -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">🏗️</span>
+      <span class="section-label">Project Information</span>
+    </div>
+    <div class="section-body">
+
+      <!-- 6. Job Scope -->
+      <div class="field">
+        <label class="field-label" for="f_scope">Job Scope / Scope of Work <span class="req">*</span></label>
+        <textarea class="field-textarea" id="f_scope" name="scope" required
+          placeholder="Describe the scope of work in detail…" rows="4"></textarea>
+        <div class="field-error" id="err_scope">Please describe the job scope.</div>
+      </div>
+
+      <!-- 7. Client Name -->
+      <div class="field">
+        <label class="field-label" for="f_client">Client Name <span class="req">*</span></label>
+        <input class="field-input" type="text" id="f_client" name="client" required
+          placeholder="e.g. Ceylon Electricity Board" />
+        <div class="field-error" id="err_client">Please enter the client name.</div>
+      </div>
+
+      <!-- 8. Bidding Company -->
+      <div class="field">
+        <label class="field-label" for="f_company">Bidding Company <span class="req">*</span></label>
+        <div class="select-wrap">
+          <select class="field-select" id="f_company" name="company" required>
+            <option value="">— Select Company —</option>
+            <option>Senaka Builders</option>
+            <option>Senaka Zen</option>
+            <option>Senaka ReadyMix</option>
+            <option>Senaka Cement</option>
+            <option>Industry Serve Engineers</option>
+            <option>Senro Enterprises</option>
+          </select>
+        </div>
+        <div class="field-error" id="err_company">Please select a company.</div>
+      </div>
+
+      <!-- 9 & 10. Values -->
+      <div class="field-row">
+        <div class="field">
+          <label class="field-label" for="f_projval">Project Value (LKR)</label>
+          <div class="lkr-wrap">
+            <span class="lkr-prefix">LKR</span>
+            <input class="field-input" type="number" id="f_projval" name="projectValue" min="0"
+              placeholder="0.00" />
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label" for="f_bidsec">Bid Security (LKR)</label>
+          <div class="lkr-wrap">
+            <span class="lkr-prefix">LKR</span>
+            <input class="field-input" type="number" id="f_bidsec" name="bidSecurity" min="0"
+              placeholder="0.00" />
+          </div>
+        </div>
+      </div>
+
+      <!-- 11. Qualification Requirements -->
+      <div class="field">
+        <label class="field-label" for="f_qual">Qualification Requirements</label>
+        <textarea class="field-textarea" id="f_qual" name="qualification"
+          placeholder="Any contractor qualifications, grades, certifications required…" rows="3"></textarea>
+      </div>
+
+      <!-- 16. Project Period -->
+      <div class="field">
+        <label class="field-label" for="f_period">Project Period</label>
+        <input class="field-input" type="text" id="f_period" name="projectPeriod"
+          placeholder="e.g. 12 months / 365 days" />
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Section 4: Tender Document ── -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">📁</span>
+      <span class="section-label">Tender Document Details</span>
+    </div>
+    <div class="section-body">
+
+      <!-- 12. Collection Location -->
+      <div class="field">
+        <label class="field-label" for="f_colloc">Location to Collect Tender Document <span class="req">*</span></label>
+        <textarea class="field-textarea" id="f_colloc" name="collectLocation" required
+          placeholder="Full address / office name where documents can be collected…" rows="3"></textarea>
+        <div class="field-error" id="err_colloc">Please enter the collection location.</div>
+      </div>
+
+      <!-- 13. Document Charges -->
+      <div class="field">
+        <label class="field-label" for="f_docfee">Document Collection Charges (LKR)</label>
+        <div class="lkr-wrap">
+          <span class="lkr-prefix">LKR</span>
+          <input class="field-input" type="number" id="f_docfee" name="docFee" min="0"
+            placeholder="0.00" />
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Section 5: Pre-Bid Meeting ── -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">🤝</span>
+      <span class="section-label">Pre-Bid Meeting</span>
+    </div>
+    <div class="section-body">
+
+      <!-- 14. Pre-bid Date -->
+      <div class="field">
+        <label class="field-label" for="f_prebiddate">Pre-Bid Meeting Date</label>
+        <input class="field-input" type="date" id="f_prebiddate" name="prebidDate" />
+      </div>
+
+      <!-- 15. Pre-bid Location -->
+      <div class="field">
+        <label class="field-label" for="f_prebidloc">Pre-Bid Meeting Location</label>
+        <input class="field-input" type="text" id="f_prebidloc" name="prebidLocation"
+          placeholder="Venue / address for pre-bid meeting" />
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Section 6: Submission ── -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">🗓️</span>
+      <span class="section-label">Submission Deadline</span>
+    </div>
+    <div class="section-body">
+
+      <!-- 17. Closing Date -->
+      <div class="field">
+        <label class="field-label" for="f_close">Tender Closing / Submission Deadline <span class="req">*</span></label>
+        <input class="field-input" type="date" id="f_close" name="closingDate" required />
+        <div class="field-error" id="err_close">Please select the closing date.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Section 7: Additional ── -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">📝</span>
+      <span class="section-label">Additional Information</span>
+    </div>
+    <div class="section-body">
+
+      <!-- 18. Remarks -->
+      <div class="field">
+        <label class="field-label" for="f_remarks">Remarks</label>
+        <textarea class="field-textarea" id="f_remarks" name="remarks"
+          placeholder="Any additional notes or remarks…" rows="3"></textarea>
+      </div>
+
+      <!-- 19. Advertisement Image -->
+      <div class="field">
+        <label class="field-label">Advertisement Image</label>
+        <div class="img-upload-area" id="imgArea">
+          <input type="file" id="f_image" name="image" accept="image/*" capture="environment" />
+          <div class="img-icon">📷</div>
+          <div class="img-upload-text">Tap to take a photo or choose from gallery</div>
+        </div>
+        <div class="img-preview" id="imgPreview">
+          <img id="imgThumb" src="" alt="Preview" />
+          <div class="remove-img" id="removeImg">✕ Remove Image</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Submit ── -->
+  <div class="submit-wrap">
+    <button type="submit" class="btn-submit" id="submitBtn">
+      <span class="btn-icon">📤</span> Submit Tender Notice
+    </button>
+    <p style="text-align:center; font-size:.72rem; color:var(--muted); margin-top:10px;">
+      Fields marked <span style="color:var(--error);">*</span> are mandatory
+    </p>
+  </div>
+
+</form>
+</div><!-- /container -->
+
+<!-- Loading Overlay -->
+<div id="loading">
+  <div class="spinner"></div>
+  <div class="loading-text">Submitting tender notice…</div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- Success Screen -->
+<div id="success-screen">
+  <div class="success-icon">✅</div>
+  <div class="success-title">Submission Successful!</div>
+  <p class="success-msg">Your tender notice has been recorded and submitted to the Senaka Group procurement database.</p>
+  <button class="btn-new" id="newEntryBtn">+ Add Another Tender</button>
+</div>
+
+<script>
+/* ════════════════════════════════════════════════════
+   CONFIGURATION  ← UPDATE THIS URL AFTER DEPLOYING
+   ════════════════════════════════════════════════════ */
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbypmhkKX4MXXBLx0sjsthoefpZSXOTjry1SObWBTvnv31z18fJTcCWGae9tnUgBCOMDTQ/exec';
+
+/* ── District Map ── */
+const DISTRICTS = {
+  Western:       ['Colombo','Gampaha','Kalutara'],
+  Central:       ['Kandy','Matale','Nuwara Eliya'],
+  Southern:      ['Galle','Matara','Hambantota'],
+  Northern:      ['Jaffna','Mannar','Mullaitivu','Killinochchi','Vavuniya'],
+  Eastern:       ['Trincomalee','Batticaloa','Ampara'],
+  'North Western':['Kurunegala','Puttalam'],
+  'North Central':['Anuradhapura','Polonnaruwa'],
+  Uva:           ['Badulla','Monaragala'],
+  Sabaragamuwa:  ['Ratnapura','Kegalle']
+};
+
+/* ── DOM refs ── */
+const form        = document.getElementById('tenderForm');
+const provinceEl  = document.getElementById('f_province');
+const districtEl  = document.getElementById('f_district');
+const imgInput    = document.getElementById('f_image');
+const imgPreview  = document.getElementById('imgPreview');
+const imgThumb    = document.getElementById('imgThumb');
+const removeImg   = document.getElementById('removeImg');
+const progressBar = document.getElementById('progress-bar');
+const progressPct = document.getElementById('progress-pct');
+const submitBtn   = document.getElementById('submitBtn');
+const loading     = document.getElementById('loading');
+const toast       = document.getElementById('toast');
+const successScr  = document.getElementById('success-screen');
+
+/* ── Set today's date as default ── */
+const today = new Date().toISOString().split('T')[0];
+document.getElementById('f_date').value = today;
+
+/* ── Province → District ── */
+provinceEl.addEventListener('change', () => {
+  const prov = provinceEl.value;
+  districtEl.innerHTML = '<option value="">— Select District —</option>';
+  if (prov && DISTRICTS[prov]) {
+    DISTRICTS[prov].forEach(d => {
+      const o = document.createElement('option');
+      o.value = o.textContent = d;
+      districtEl.appendChild(o);
+    });
+  }
+  updateProgress();
+});
+
+/* ── Image Preview ── */
+imgInput.addEventListener('change', () => {
+  const file = imgInput.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      imgThumb.src = e.target.result;
+      imgPreview.style.display = 'block';
+      document.getElementById('imgArea').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+});
+removeImg.addEventListener('click', () => {
+  imgInput.value = '';
+  imgPreview.style.display = 'none';
+  document.getElementById('imgArea').style.display = 'block';
+  imgThumb.src = '';
+});
+
+/* ── Progress ── */
+const mandatoryIds = ['f_date','f_type','f_source','f_province','f_district',
+                       'f_scope','f_client','f_company','f_colloc','f_close'];
+function updateProgress() {
+  let filled = 0;
+  mandatoryIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.value.trim()) filled++;
+  });
+  const pct = Math.round((filled / mandatoryIds.length) * 100);
+  progressBar.style.width = pct + '%';
+  progressPct.textContent = pct + '%';
+}
+form.addEventListener('input', updateProgress);
+form.addEventListener('change', updateProgress);
+updateProgress();
+
+/* ── Validation ── */
+const requiredFields = [
+  {id:'f_date',     err:'err_date'},
+  {id:'f_type',     err:'err_type'},
+  {id:'f_source',   err:'err_source'},
+  {id:'f_province', err:'err_province'},
+  {id:'f_district', err:'err_district'},
+  {id:'f_scope',    err:'err_scope'},
+  {id:'f_client',   err:'err_client'},
+  {id:'f_company',  err:'err_company'},
+  {id:'f_colloc',   err:'err_colloc'},
+  {id:'f_close',    err:'err_close'},
+];
+function validate() {
+  let ok = true;
+  requiredFields.forEach(({id,err}) => {
+    const el = document.getElementById(id);
+    const errEl = document.getElementById(err);
+    if (!el.value.trim()) {
+      el.classList.add('error');
+      errEl.classList.add('visible');
+      if (ok) { el.scrollIntoView({behavior:'smooth',block:'center'}); }
+      ok = false;
+    } else {
+      el.classList.remove('error');
+      errEl.classList.remove('visible');
+    }
+  });
+  return ok;
+}
+requiredFields.forEach(({id}) => {
+  document.getElementById(id).addEventListener('input', function(){
+    if(this.value.trim()) {
+      this.classList.remove('error');
+      document.getElementById(requiredFields.find(f=>f.id===id).err).classList.remove('visible');
+    }
+  });
+});
+
+/* ── Toast Helper ── */
+function showToast(msg, type='') {
+  toast.textContent = msg;
+  toast.className = 'show ' + type;
+  clearTimeout(toast._t);
+  toast._t = setTimeout(()=>{ toast.className=''; }, 3800);
+}
+
+/* ── Convert image to base64 ── */
+function imageToBase64(file) {
+  return new Promise((res, rej) => {
+    const reader = new FileReader();
+    reader.onload = e => res(e.target.result.split(',')[1]);
+    reader.onerror = rej;
+    reader.readAsDataURL(file);
+  });
+}
+
+/* ── Format LKR ── */
+function lkr(val) {
+  if (!val) return '';
+  return 'LKR ' + Number(val).toLocaleString('en-LK');
+}
+
+/* ── Submit ── */
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if (!validate()) return;
+
+  submitBtn.disabled = true;
+  loading.classList.add('show');
+
+  try {
+    const fd = new FormData(form);
+    const payload = {};
+    fd.forEach((v,k) => { if (k !== 'image') payload[k] = v; });
+
+    // Timestamp
+    payload.submittedAt = new Date().toISOString();
+
+    // Image
+    const imgFile = imgInput.files[0];
+    if (imgFile) {
+      payload.imageBase64 = await imageToBase64(imgFile);
+      payload.imageName   = imgFile.name;
+      payload.imageType   = imgFile.type;
+    }
+
+    if (GAS_URL === 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE') {
+      // Demo mode
+      await new Promise(r => setTimeout(r, 1500));
+      loading.classList.remove('show');
+      successScr.classList.add('show');
+      form.reset();
+      document.getElementById('f_date').value = today;
+      districtEl.innerHTML = '<option value="">— Select Province First —</option>';
+      imgPreview.style.display='none';
+      document.getElementById('imgArea').style.display='block';
+      updateProgress();
+      return;
+    }
+
+    const res = await fetch(GAS_URL, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+    const json = await res.json();
+
+    loading.classList.remove('show');
+    if (json.status === 'success') {
+      successScr.classList.add('show');
+      form.reset();
+      document.getElementById('f_date').value = today;
+      districtEl.innerHTML = '<option value="">— Select Province First —</option>';
+      imgPreview.style.display='none';
+      document.getElementById('imgArea').style.display='block';
+      updateProgress();
+    } else {
+      throw new Error(json.message || 'Submission failed');
+    }
+  } catch (err) {
+    loading.classList.remove('show');
+    showToast('❌ ' + (err.message || 'Submission failed. Please retry.'), 'error-toast');
+  } finally {
+    submitBtn.disabled = false;
+  }
+});
+
+/* ── New Entry ── */
+document.getElementById('newEntryBtn').addEventListener('click', () => {
+  successScr.classList.remove('show');
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+
+/* ── Offline Detection ── */
+const offlineBar = document.getElementById('offline-bar');
+function updateOnlineStatus() {
+  if (!navigator.onLine) offlineBar.classList.add('show');
+  else offlineBar.classList.remove('show');
+}
+window.addEventListener('online',  updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+updateOnlineStatus();
+
+/* ── PWA Install Prompt ── */
+let deferredPrompt;
+const installBanner = document.getElementById('install-banner');
+const installBtn    = document.getElementById('install-btn');
+const installClose  = document.getElementById('install-close');
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  installBanner.classList.add('show');
+});
+installBtn.addEventListener('click', async () => {
+  installBanner.classList.remove('show');
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt = null;
+  }
+});
+installClose.addEventListener('click', () => installBanner.classList.remove('show'));
+
+/* ── Service Worker ── */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(r => console.log('SW registered:', r.scope))
+      .catch(e => console.error('SW error:', e));
+  });
+}
+</script>
+</body>
+</html>
